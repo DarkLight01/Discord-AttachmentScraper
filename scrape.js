@@ -3,7 +3,9 @@ const { greenBright, redBright, yellowBright } = require("chalk");
 const ora = require("ora");
 const fs = require("fs");
 const fetch = require("node-fetch");
+
 Main();
+
 async function request(before) {
     const options = {
         method: "GET",
@@ -26,6 +28,7 @@ async function request(before) {
         return [];
     }
 }
+
 async function go() {
     let result = [];
     let page = await request();
@@ -41,9 +44,11 @@ async function go() {
     }
 
     const spinner = ora("Processing messages to extract image links...").start();
+
+    
     const imageLinks = result
-        .flatMap(msg => msg.attachments.map(att => att.proxy_url))
-        .filter(Boolean); 
+        .flatMap(msg => msg.attachments.map(att => removeQueryParams(att.proxy_url)))  
+        .filter(Boolean);  
 
     if (imageLinks.length === 0) {
         spinner.fail(redBright("No image links found in fetched messages."));
@@ -56,6 +61,17 @@ async function go() {
     } catch (error) {
         spinner.fail(redBright(`Failed to write links.json: ${error.message}`));
         process.exit(1);
+    }
+}
+
+function removeQueryParams(url) {
+    try {
+        const parsedUrl = new URL(url);
+        parsedUrl.search = ''; 
+        return parsedUrl.toString(); 
+    } catch (error) {
+        console.error(redBright(`Invalid URL: ${url}`));
+        return null;  
     }
 }
 
