@@ -1,5 +1,5 @@
 # Updated Discord Image Scraper
-
+﹒[Original Outdated One](https://github.com/17teen/Discord-Image-Scraper)  
 ----------
 **Note:** This is an **updated version** of the original Discord Image Scraper. The previous version was outdated, and many improvements and fixes have been made to enhance its functionality. The key updates include:
 
