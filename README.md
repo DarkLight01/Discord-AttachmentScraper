@@ -1,11 +1,11 @@
-# Updated Discord Image Scraper
-﹒[Original Outdated One](https://github.com/17teen/Discord-Image-Scraper)  
+# Discord Attachment Scraper
+﹒[Original & Outdated One](https://github.com/17teen/Discord-Image-Scraper)  
 ----------
 **Note:** This is an **updated version** of the original Discord Image Scraper. The previous version was outdated, and many improvements and fixes have been made to enhance its functionality. The key updates include:
 
 - Improved handling of `links.json` and file fetching logic.
 - Fixed webhook posting errors with enhanced error handling.
-- Optimized image extraction process for better performance.
+- Optimized image/gif/video extraction process for better performance.
 
 If you're using the older version, please switch to this updated version for a smoother experience.
 
