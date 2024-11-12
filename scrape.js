@@ -43,28 +43,44 @@ async function go() {
         result = result.concat(page);
     }
 
-    const spinner = ora("Processing messages to extract image links...").start();
+    const spinner = ora("Processing messages to extract image and video links...").start();
 
-    
     const imageLinks = result
-        .flatMap(msg => msg.attachments.map(att => removeQueryParams(att.proxy_url)))  
-        .filter(Boolean);  
+        .flatMap(msg => {
+            const links = [];
+            if (msg.attachments) {
+                links.push(...msg.attachments.map(att => processImgurLink(att.url || att.proxy_url)));
+            }
+
+            if (msg.embeds) {
+                links.push(...msg.embeds.map(embed => processImgurLink(embed.thumbnail?.url || embed.url)));
+            }
+
+            return links;
+        })
+        .filter(Boolean); 
 
     if (imageLinks.length === 0) {
-        spinner.fail(redBright("No image links found in fetched messages."));
+        spinner.fail(redBright("No image or video links found in fetched messages."));
         process.exit(1);
     }
 
     try {
         fs.writeFileSync("links.json", JSON.stringify(imageLinks, null, 2));
-        spinner.succeed(greenBright(`Extracted ${imageLinks.length} images. Check "links.json"`));
+        spinner.succeed(greenBright(`Extracted ${imageLinks.length} image and video links. Check "links.json"`));
     } catch (error) {
         spinner.fail(redBright(`Failed to write links.json: ${error.message}`));
         process.exit(1);
     }
 }
 
-function removeQueryParams(url) {
+function processImgurLink(url) {
+    if (!url) return null;
+
+    if (url.includes("imgur.com")) {
+        url = url.replace(/(h)(?=\.(jpg|mp4)$)/, "");
+        return url;
+    }
     try {
         const parsedUrl = new URL(url);
         parsedUrl.search = ''; 
@@ -76,7 +92,7 @@ function removeQueryParams(url) {
 }
 
 function Main() {
-    console.log(yellowBright("Starting the image scraper..."));
+    console.log(yellowBright("Starting the image and video scraper..."));
     go().catch(error => {
         console.error(redBright(`Error: ${error.message}`));
     });
